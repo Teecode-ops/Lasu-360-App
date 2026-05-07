@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Wifi, WifiOff, Bell, Download, LogOut } from 'lucide-react';
 import { Toaster, toast } from 'sonner';
 import { Tab, User, NewsItem, TimetableEntry, Result, Payment, CampusLocation, RegistrationRequest } from './types';
-import { Login } from './components/Login';
-import { Dashboard } from './components/Dashboard';
-import { CourseReg } from './components/CourseReg';
-import { Timetable } from './components/Timetable';
-import { Results } from './components/Results';
-import { CampusMap } from './components/CampusMap';
-import { Navigation } from './components/Navigation';
-import { Payments } from './components/Payments';
-import { AdminPanel } from './components/AdminPanel';
-import { HODApproval } from './components/HODApproval';
+import { Login } from '@/components/Login';
+import { Dashboard } from '@/components/Dashboard';
+import { CourseReg } from '@/components/CourseReg';
+import { Timetable } from '@/components/Timetable';
+import { Results } from '@/components/Results';
+import { CampusMap } from '@/components/CampusMap';
+import { Navigation } from '@/components/Navigation';
+import { Payments } from '@/components/Payments';
+import { AdminPanel } from '@/components/AdminPanel';
+import { HODApproval } from '@/components/HODApproval';
 import { 
   subscribeToNews, 
   subscribeToTimetable, 
@@ -21,7 +21,7 @@ import {
   subscribeToRegistrationRequests,
   updateRegistrationStatus,
   submitRegistrationRequest
-} from './services/firebaseService';
+} from '@/services/firebaseService';
 
 export default function App() {
   const [user, setUser] = useState<User | null>(() => {
