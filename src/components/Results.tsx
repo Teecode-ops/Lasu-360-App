@@ -10,6 +10,8 @@ interface ResultsProps {
 
 export const Results: React.FC<ResultsProps> = ({ results, user }) => {
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [isPrivacyOn, setIsPrivacyOn] = React.useState(false);
+  
   const filteredResults = results.filter(r => 
     r.courseCode.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -19,7 +21,15 @@ export const Results: React.FC<ResultsProps> = ({ results, user }) => {
       <header>
         <div className="flex justify-between items-start">
           <div>
-            <span className="text-[10px] font-black tracking-widest text-blue-600 uppercase">Performance Portal</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-black tracking-widest text-blue-600 uppercase">Performance Portal</span>
+              <button 
+                onClick={() => setIsPrivacyOn(!isPrivacyOn)}
+                className="text-[8px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-black uppercase tracking-widest"
+              >
+                {isPrivacyOn ? 'Privacy: On' : 'Privacy: Off'}
+              </button>
+            </div>
             <h2 className="text-3xl font-black text-gray-900 tracking-tighter leading-tight mt-1">Examination Results</h2>
           </div>
           <div className="p-3 bg-blue-900 text-white rounded-2xl shadow-lg shadow-blue-900/20">
@@ -45,7 +55,9 @@ export const Results: React.FC<ResultsProps> = ({ results, user }) => {
                <div>
                   <h4 className="text-[10px] font-black text-blue-300 uppercase tracking-widest">Cumulative GPA</h4>
                   <div className="flex items-baseline gap-1 mt-1">
-                    <span className="text-5xl font-black tracking-tighter">{user.cgpa.toFixed(2)}</span>
+                    <span className="text-5xl font-black tracking-tighter">
+                      {isPrivacyOn ? '•.••' : user.cgpa.toFixed(2)}
+                    </span>
                     <span className="text-blue-400 font-bold">/ 5.00</span>
                   </div>
                </div>
@@ -113,12 +125,13 @@ export const Results: React.FC<ResultsProps> = ({ results, user }) => {
              >
                 <div className="flex items-center gap-4">
                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl tracking-tighter ${
+                     isPrivacyOn ? 'bg-gray-100 text-gray-300' :
                      result.grade === 'A' ? 'bg-green-50 text-green-600' :
                      result.grade === 'B' ? 'bg-blue-50 text-blue-600' : 
                      result.grade === 'C' ? 'bg-orange-50 text-orange-600' :
                      'bg-gray-50 text-gray-400'
                    }`}>
-                     {result.grade}
+                     {isPrivacyOn ? '•' : result.grade}
                    </div>
                    <div>
                      <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Course Code</h4>
@@ -128,7 +141,9 @@ export const Results: React.FC<ResultsProps> = ({ results, user }) => {
                 
                 <div className="text-right">
                    <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Score</h4>
-                   <p className="text-lg font-black text-gray-900 tracking-tighter mt-0.5">{result.score}</p>
+                   <p className="text-lg font-black text-gray-900 tracking-tighter mt-0.5">
+                     {isPrivacyOn ? '••' : result.score}
+                   </p>
                    <p className="text-[8px] text-gray-300 font-bold uppercase">{result.units} Units</p>
                 </div>
              </motion.div>

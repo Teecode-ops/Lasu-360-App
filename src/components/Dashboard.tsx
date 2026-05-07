@@ -23,17 +23,32 @@ interface DashboardProps {
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ user, news, timetable, onNavigate }) => {
-  const [isFeesPrivate, setIsFeesPrivate] = React.useState(true);
+  const [isPrivacyMode, setIsPrivacyMode] = React.useState(false); // Default to OFF for better first impression
   const [confidentialData, setConfidentialData] = React.useState<any>(null);
+  const [apiError, setApiError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (user.matricNumber) {
-      fetch(`/api/university/confidential/${user.matricNumber}`)
-        .then(res => res.json())
-        .then(data => {
-            if (data && !data.error) setConfidentialData(data);
-        })
-        .catch(() => console.warn("Central API unreachable"));
+      setApiError(null);
+      // Brief delay to simulate university server firewall check
+      const timer = setTimeout(() => {
+        fetch(`/api/university/confidential/${user.matricNumber}`)
+          .then(async res => {
+            if (!res.ok) {
+              const err = await res.json();
+              throw new Error(err.error || `HTTP ${res.status}`);
+            }
+            return res.json();
+          })
+          .then(data => {
+              if (data) setConfidentialData(data);
+          })
+          .catch((err) => {
+            console.warn("Central API error:", err.message);
+            setApiError(err.message);
+          });
+      }, 500);
+      return () => clearTimeout(timer);
     }
   }, [user.matricNumber]);
 
@@ -41,13 +56,21 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, news, timetable, onN
     <div className="flex flex-col gap-8 p-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Welcome Header */}
       <section>
-        <span className="text-[10px] font-black tracking-widest text-blue-600 uppercase">Welcome Student</span>
-        <div className="flex justify-between items-end mt-1">
+        <div className="flex justify-between items-center">
+          <span className="text-[10px] font-black tracking-widest text-blue-600 uppercase">Student Hub</span>
+          <button 
+            onClick={() => setIsPrivacyMode(!isPrivacyMode)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 rounded-full text-[9px] font-black uppercase tracking-widest text-gray-500 hover:bg-gray-200 transition-colors"
+          >
+            {isPrivacyMode ? 'Privacy On' : 'Privacy Off'}
+          </button>
+        </div>
+        <div className="flex justify-between items-end mt-2">
           <h2 className="text-3xl font-black text-gray-900 tracking-tighter leading-tight">
             Hi, {user.name} <span className="text-blue-200">👋</span>
           </h2>
           <div className="h-10 w-10 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
-             <img src="https://ui-avatars.com/api/?name=Mofolunwaso+Adekoya&background=1e3a8a&color=fff" alt="Profile" />
+             <img src={`https://ui-avatars.com/api/?name=${user.name}+${user.surname}&background=1e3a8a&color=fff`} alt="Profile" />
           </div>
         </div>
       </section>
@@ -57,11 +80,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, news, timetable, onN
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           onClick={() => confidentialData ? onNavigate('results') : null}
-          className={`${confidentialData ? 'bg-indigo-900 border-none' : 'bg-white border border-gray-100'} p-6 rounded-[2.5rem] text-white shadow-xl shadow-indigo-100 relative overflow-hidden cursor-pointer group`}
+          className={`${confidentialData ? 'bg-indigo-900 border-none' : 'bg-white border border-gray-100'} p-6 rounded-[2.5rem] text-white shadow-xl shadow-indigo-100 relative overflow-hidden cursor-pointer group min-h-[160px] flex flex-col justify-center`}
       >
           {confidentialData ? (
             <>
-                <div className="relative z-10">
+                <div className="relative z-10 w-full">
                   <div className="flex justify-between items-start mb-4">
                     <div className="p-2 bg-indigo-800 rounded-xl">
                       <GraduationCap size={20} className="text-indigo-200" />
@@ -70,14 +93,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, news, timetable, onN
                   </div>
                   
                   <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-black tracking-tighter">{confidentialData.cgpa.toFixed(2)}</span>
+                    <span className="text-5xl font-black tracking-tighter">
+                      {isPrivacyMode ? '•.••' : confidentialData.cgpa.toFixed(2)}
+                    </span>
                     <span className="text-indigo-300 font-bold">/ 5.00</span>
                   </div>
                   
                   <div className="mt-4 flex items-center justify-between">
                     <div>
-                      <p className="text-indigo-300 text-xs font-bold uppercase tracking-wider">{user.level} • Fall 2023</p>
-                      <p className="text-[10px] text-white/50 mt-0.5">Academic Standing: First Class</p>
+                      <p className="text-indigo-300 text-xs font-bold uppercase tracking-wider">{user.level || confidentialData.status} • Fall 2023</p>
+                      <p className="text-[10px] text-white/50 mt-0.5">Academic Standing: {confidentialData.cgpa >= 4.5 ? 'First Class' : 'Good Standing'}</p>
                     </div>
                     <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white text-white group-hover:text-indigo-900 transition-all">
                       <ChevronRight size={16} />
@@ -89,13 +114,28 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, news, timetable, onN
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-500 rounded-full blur-2xl -ml-12 -mb-12 opacity-20"></div>
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center py-4 text-gray-400">
-               <div className="animate-pulse flex items-center gap-2">
-                 <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                 <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                 <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-               </div>
-               <span className="text-xs font-bold mt-2 uppercase tracking-widest">Connecting to Central DB...</span>
+            <div className="flex flex-col items-center justify-center py-4 text-gray-400 w-full">
+               {apiError ? (
+                 <>
+                   <span className="text-red-400 text-[10px] font-black uppercase tracking-widest mb-1">Central DB Offline</span>
+                   <span className="text-[8px] opacity-70 text-center px-4 leading-tight">{apiError}</span>
+                   <button 
+                     onClick={(e) => { e.stopPropagation(); window.location.reload(); }}
+                     className="mt-3 px-4 py-1.5 bg-gray-50 rounded-full text-[8px] font-black uppercase text-gray-900 border border-gray-100"
+                   >
+                     Retry Connection
+                   </button>
+                 </>
+               ) : (
+                 <>
+                    <div className="animate-pulse flex items-center gap-2">
+                       <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                       <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                       <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+                    </div>
+                    <span className="text-[10px] font-black mt-4 uppercase tracking-widest text-blue-900">Connecting to LASU Main DB...</span>
+                 </>
+               )}
             </div>
           )}
       </motion.section>
@@ -131,13 +171,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, news, timetable, onN
                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest leading-none">Wallet Balance</h4>
                 <div className="flex items-baseline gap-2 mt-1">
                   <span className="text-xl font-black tracking-tight text-gray-900">
-                    {isFeesPrivate ? '₦ ***' : `₦${(confidentialData?.debts || user.feesDue) / 1000}k`}
+                    {isPrivacyMode ? '₦ ***' : `₦${((confidentialData?.debts ?? user.feesDue) / 1000).toLocaleString()}k`}
                   </span>
                   <button 
-                    onClick={() => setIsFeesPrivate(!isFeesPrivate)}
+                    onClick={() => setIsPrivacyMode(!isPrivacyMode)}
                     className="text-[10px] text-blue-600 font-bold uppercase"
                   >
-                    {isFeesPrivate ? 'Show' : 'Hide'}
+                    {isPrivacyMode ? 'Show' : 'Hide'}
                   </button>
                 </div>
               </div>

@@ -27,6 +27,31 @@ export const CampusMap: React.FC<CampusMapProps> = ({ locations }) => {
         <span className="text-[10px] font-black tracking-widest text-blue-600 uppercase">Interactive Explorer</span>
         <h2 className="text-3xl font-black text-gray-900 tracking-tighter leading-tight mt-1 mb-6">Campus Directory</h2>
         
+        {/* Visual Mini-Map Placeholder */}
+        <div className="mb-6 relative h-48 bg-blue-50 rounded-[2.5rem] border border-blue-100 overflow-hidden group shadow-inner">
+           <div className="absolute inset-0 opacity-30 pointer-events-none">
+              <div className="grid grid-cols-12 grid-rows-6 gap-2 p-6 h-full">
+                 {[...Array(48)].map((_, i) => (
+                   <div key={i} className={`rounded-xl ${i % 7 === 0 ? 'bg-blue-400' : 'bg-blue-100'} ${i === 15 ? 'bg-red-400 animate-pulse' : ''}`} />
+                 ))}
+              </div>
+           </div>
+           <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-white/90 backdrop-blur-md px-5 py-3 rounded-2xl shadow-xl border border-white flex items-center gap-3">
+                 <div className="w-2.5 h-2.5 bg-blue-600 rounded-full animate-ping"></div>
+                 <div className="flex flex-col">
+                   <span className="text-[10px] font-black uppercase text-blue-900 tracking-widest leading-none">GPS: Active</span>
+                   <span className="text-[8px] font-bold text-blue-400 uppercase tracking-tighter mt-1">Ojo Main Campus</span>
+                 </div>
+              </div>
+           </div>
+           <div className="absolute bottom-4 right-4">
+              <button className="bg-blue-900 text-white p-3 rounded-2xl shadow-lg active:scale-95 transition-all">
+                <NavIcon size={18} />
+              </button>
+           </div>
+        </div>
+
         <div className="relative group">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
             <Search size={18} />

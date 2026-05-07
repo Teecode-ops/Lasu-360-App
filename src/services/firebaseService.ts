@@ -79,12 +79,15 @@ export const submitRegistrationRequest = async (request: Omit<RegistrationReques
   await addDoc(collection(db, 'registration_requests'), request);
 };
 
-export const saveUser = async (user: User) => {
-  await setDoc(doc(db, 'users', user.id), user);
+export const updateTimetableEntry = async (id: string, updates: Partial<TimetableEntry>) => {
+  const ref = doc(db, 'timetable', id);
+  await updateDoc(ref, updates);
 };
 
-export const getUser = async (id: string): Promise<User | null> => {
-  const docRef = doc(db, 'users', id);
-  const docSnap = await getDoc(docRef);
-  return docSnap.exists() ? docSnap.data() as User : null;
+export const addTimetableEntry = async (entry: Omit<TimetableEntry, 'id'>) => {
+  await addDoc(collection(db, 'timetable'), entry);
+};
+
+export const deleteTimetableEntry = async (id: string) => {
+  await setDoc(doc(db, 'timetable', id), { isCancelled: true }, { merge: true });
 };

@@ -19,27 +19,32 @@ const UNIVERSITY_DB = {
     "HOD/LASU/001": {
       cgpa: 5.0,
       debts: 0,
+      status: "Staff",
       grades: {}
+    },
+    "HOC/LASU/001": {
+      cgpa: 3.85,
+      debts: 0,
+      status: "Final Year Rep",
+      grades: { "CSC 301": "B+", "CSC 302": "A" }
     }
   }
 };
 
 // API Routes
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", service: "University Central Server" });
+  res.json({ status: "ok", service: "University Central Server", env: process.env.NODE_ENV });
 });
 
-// Debug route to see the "External" Database content
-app.get("/api/university/debug/all", (req, res) => {
-  res.json(UNIVERSITY_DB);
-});
-
-// Fetch confidential student data
-app.get("/api/university/confidential/:matricNo*", (req, res) => {
-  const params = req.params as any;
-  const matricNo = Array.isArray(params.matricNo) ? params.matricNo.join('/') : params.matricNo;
+// Fetch confidential student data - Handling slashes in matric numbers
+app.get("/api/university/confidential/*", (req, res) => {
+  const matricNo = req.params[0];
   console.log(`[API] Fetching confidential data for: ${matricNo}`);
   
+  if (!matricNo) {
+    return res.status(400).json({ error: "Matric number is required" });
+  }
+
   // @ts-ignore
   const data = UNIVERSITY_DB.students[matricNo];
   
@@ -47,6 +52,7 @@ app.get("/api/university/confidential/:matricNo*", (req, res) => {
     res.json(data);
   } else {
     console.warn(`[API] Record not found: ${matricNo}`);
+    // Return a generic fallback so UI doesn't hang forever
     res.status(404).json({ error: "Student record not found in University Central DB" });
   }
 });

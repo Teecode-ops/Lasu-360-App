@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, BookOpen, Clock, Map as MapIcon, GraduationCap, ShieldCheck, CreditCard } from 'lucide-react';
+import { Home, BookOpen, Clock, Map as MapIcon, GraduationCap, ShieldCheck, Calendar } from 'lucide-react';
 import { Tab, UserRole } from '../types';
 
 interface NavigationProps {
@@ -17,9 +17,11 @@ export const Navigation: React.FC<NavigationProps> = ({ currentTab, onTabChange,
     { id: 'map', icon: MapIcon, label: 'Map' },
   ];
 
-  // Add HOD/HOC specific tabs
-  if (userRole === 'hod' || userRole === 'hoc') {
+  // Define role-specific tabs
+  if (userRole === 'hod') {
     tabs.push({ id: 'approvals', icon: ShieldCheck, label: 'Approvals' });
+  } else if (userRole === 'hoc') {
+    tabs.push({ id: 'schedule_manager', icon: Calendar, label: 'Class Rep' });
   }
 
   return (

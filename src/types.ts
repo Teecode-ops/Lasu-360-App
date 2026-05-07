@@ -75,7 +75,7 @@ export interface CampusLocation {
   lng: number;
 }
 
-export type Tab = 'home' | 'courses' | 'timetable' | 'results' | 'map' | 'payments' | 'admin' | 'approvals' | 'idcard';
+export type Tab = 'home' | 'courses' | 'timetable' | 'results' | 'map' | 'payments' | 'admin' | 'approvals' | 'idcard' | 'schedule_manager';
 
 export interface RegistrationRequest {
   id: string;

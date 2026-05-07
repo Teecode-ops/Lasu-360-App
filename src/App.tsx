@@ -12,6 +12,7 @@ import { Navigation } from '@/components/Navigation';
 import { Payments } from '@/components/Payments';
 import { AdminPanel } from '@/components/AdminPanel';
 import { HODApproval } from '@/components/HODApproval';
+import { ScheduleManager } from '@/components/ScheduleManager';
 import { 
   subscribeToNews, 
   subscribeToTimetable, 
@@ -151,12 +152,14 @@ export default function App() {
   const handleLogin = (userData: User) => {
     setUser(userData);
     setIsAuthenticated(true);
+    setCurrentTab('home'); // Reset to home on login
     localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const handleLogout = () => {
     setUser(null);
     setIsAuthenticated(false);
+    setCurrentTab('home'); // Reset on logout
     localStorage.removeItem('user');
   };
 
@@ -182,7 +185,7 @@ export default function App() {
     if (!user) return;
     await submitRegistrationRequest({
       studentId: user.id,
-      studentName: `${user.surname} ${user.firstName || ''}`,
+      studentName: `${user.surname} ${user.name}`,
       matricNumber: user.matricNumber,
       courses,
       totalUnits,
@@ -212,6 +215,8 @@ export default function App() {
         return <Payments payments={payments} user={user!} />;
       case 'approvals':
         return <HODApproval requests={approvals} onApprove={handleApprove} onReject={handleReject} />;
+      case 'schedule_manager':
+        return <ScheduleManager timetable={timetable} user={user!} />;
       case 'admin':
         return <AdminPanel user={user!} />;
       default:
