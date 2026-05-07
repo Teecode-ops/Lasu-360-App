@@ -10,7 +10,8 @@ import {
   Calendar,
   Clock,
   ExternalLink,
-  Wallet
+  Wallet,
+  Bell
 } from 'lucide-react';
 import { User, NewsItem, TimetableEntry } from '../types';
 

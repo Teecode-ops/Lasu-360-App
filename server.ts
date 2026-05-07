@@ -61,18 +61,20 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), 'dist');
+    const distPath = path.resolve(__dirname, 'dist');
     app.use(express.static(distPath));
-    app.get('/:any*', (req, res) => {
+    app.get('*', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
 
-  // In the Cloud environment, we always need to listen on port 3000
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`Backend and Frontend integrated! Use /api/health to test.`);
-  });
+  // Only listen if not on Vercel
+  if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`Backend and Frontend integrated! Use /api/health to test.`);
+    });
+  }
 }
 
 startServer();

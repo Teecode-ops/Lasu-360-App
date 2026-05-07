@@ -32,9 +32,11 @@ const mountApp = () => {
 
 mountApp();
 
+/*
 // Register Service Worker for PWA (Mobile App behavior)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error', err));
   });
 }
+*/
