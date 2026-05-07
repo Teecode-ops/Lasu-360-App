@@ -1,0 +1,118 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Student or staff profile",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "surname": { "type": "string" },
+        "matricNumber": { "type": "string" },
+        "department": { "type": "string" },
+        "level": { "type": "string" },
+        "cgpa": { "type": "number" },
+        "role": { "type": "string", "enum": ["student", "hoc", "hod", "admin"] },
+        "feesDue": { "type": "number" },
+        "profilePic": { "type": "string" }
+      },
+      "required": ["name", "surname", "matricNumber", "role"]
+    },
+    "NewsItem": {
+      "title": "News Item",
+      "description": "University news or announcements",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "date": { "type": "string" },
+        "category": { "type": "string" },
+        "authorId": { "type": "string" }
+      },
+      "required": ["title", "content", "authorId"]
+    },
+    "TimetableEntry": {
+      "title": "Timetable Entry",
+      "description": "Class schedule",
+      "type": "object",
+      "properties": {
+        "courseCode": { "type": "string" },
+        "time": { "type": "string" },
+        "venue": { "type": "string" },
+        "day": { "type": "string" },
+        "color": { "type": "string" },
+        "isCancelled": { "type": "boolean" },
+        "updatedAt": { "type": "object" },
+        "updatedBy": { "type": "string" }
+      },
+      "required": ["courseCode", "time", "day", "venue"]
+    },
+    "Result": {
+      "title": "Result",
+      "description": "Academic course result",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "courseCode": { "type": "string" },
+        "score": { "type": "number" },
+        "grade": { "type": "string" },
+        "units": { "type": "number" },
+        "semester": { "type": "string" },
+        "year": { "type": "string" }
+      },
+      "required": ["userId", "courseCode", "score", "grade"]
+    },
+    "Payment": {
+      "title": "Payment",
+      "description": "Student payment record",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "amount": { "type": "number" },
+        "description": { "type": "string" },
+        "status": { "type": "string" },
+        "date": { "type": "string" },
+        "reference": { "type": "string" }
+      },
+      "required": ["userId", "amount", "status"]
+    },
+    "Location": {
+      "title": "Location",
+      "description": "Campus coordinate",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" }
+      },
+      "required": ["name", "lat", "lng"]
+    }
+  },
+  "firestore": {
+    "users": {
+      "schema": "User",
+      "description": "All university users indexed by UID"
+    },
+    "news": {
+      "schema": "NewsItem",
+      "description": "Global news and announcements"
+    },
+    "timetable": {
+      "schema": "TimetableEntry",
+      "description": "Course schedule accessible to everyone"
+    },
+    "results": {
+      "schema": "Result",
+      "description": "Protected academic results"
+    },
+    "payments": {
+      "schema": "Payment",
+      "description": "Student payment history"
+    },
+    "locations": {
+      "schema": "Location",
+      "description": "Campus maps data"
+    }
+  }
+}

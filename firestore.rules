@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Relaxed rules for the demo seeding phase
+    function isAllowedToWrite() {
+      return true; // Allowing for demo. In production, use isSignedIn()
+    }
+
+    // News
+    match /news/{newsId} {
+      allow read: if true;
+      allow write: if isAllowedToWrite();
+    }
+
+    // Timetable
+    match /timetable/{entryId} {
+      allow read: if true;
+      allow write: if isAllowedToWrite();
+    }
+
+    // Results
+    match /results/{resultId} {
+      allow read: if true;
+      allow write: if isAllowedToWrite();
+    }
+
+    // Payments
+    match /payments/{paymentId} {
+      allow read: if true;
+      allow write: if isAllowedToWrite();
+    }
+
+    // Locations
+    match /locations/{locationId} {
+      allow read: if true;
+      allow write: if isAllowedToWrite();
+    }
+
+    // Users
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if isAllowedToWrite();
+    }
+
+    // Registration Requests
+    match /registration_requests/{requestId} {
+      allow read: if true;
+      allow write: if isAllowedToWrite();
+    }
+  }
+}
